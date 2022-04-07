@@ -1,7 +1,7 @@
 # Time-Tracker
-#### About
-#### Tech Stack
-#### Functionalities
+### About
+### Tech Stack
+### Functionalities
 ##### Adding Tags
 1. Click the "Add Task" button on the upper right
 2. Input new tag inside "Tag Name"
@@ -30,7 +30,7 @@ Optional
 * To enable sorting of data, click the sort arrow beside the table headers. Two sorting options is available, descending and ascending
 * To enable filtering of data, click the "Select Tag" option on the upper right and select a tag. Data will automatically be filtered
 
-#### For future improvements
+### For future improvements
 1. Multiple users
 2. Edit button
 3. Charts for statistics
