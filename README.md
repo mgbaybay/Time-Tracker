@@ -10,8 +10,8 @@
 #### Adding Tasks
 1. Click the "Add Task" button on the upper right
 2. Select a tag from the "Select Tag" dropdown menu
-  2.1. For new tags, input new tag inside "Tag Name"
-  2.2. Click the "Add Tag" button
+  * For new tags, input new tag inside "Tag Name"
+  * Click the "Add Tag" button
 3. Input task inside 
 
 Optional
