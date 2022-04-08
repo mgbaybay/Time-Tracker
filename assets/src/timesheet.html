@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Tracker</title>
+
+    <!-- Third-party CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="../css/style.css"></style>
+    
+    <!-- Third-party Scripts -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-duration-picker@latest/dist/html-duration-picker.min.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row menuOptions">
+        <div class="col-md-12">
+          <!-- Navbar -->
+          <div class="navbar">
+            <input type="text" id="dateToday" readonly class="form-control-plaintext">
+            <div>
+              <li class="nav-item">
+                <a href='#'><i class="far fa-bell"></i></a>
+              <li class="nav-item">
+                <a href='#'><i class="fas fa-cog slow-spin fa-5x fa-fw"></i></a>
+              </li>
+              <li class='nav-item' onclick="confirmLogout()">
+                <i	i class="fas fa-sign-out-alt"></i>
+                <!-- <a href='../../index.html'><i	i class="fas fa-sign-out-alt"></i></a> -->
+              </li>
+            </div>
+          </div>
+          <div class="navline"></div>
+          <h2>Time Tracker</h2>
+          <form
+            method="POST"
+            onsubmit="return taskObj.deleteTag(this);"
+            style="display: contents"
+          >
+            <!-- Data Sorting/Grouping -->
+            <select
+              name="tag"
+              class="form-control"
+              id="form-task-hour-calculator-all-tags"
+              onchange="filterTable()"
+              value="all"
+            ></select>
+
+            <!-- Tasks Addition -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#addTaskModal"
+              id="addTaskButton"
+            >
+              Add Task<i class="fa-solid fa-plus"></i>
+            </button>
+
+            <!-- Tags Deletion -->
+            <button type="submit" class="btn btn-danger" value="Delete Tag">
+              Delete Tag <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tasks Table -->
+      <div class="table-responsive">
+        <table
+          class="table table-fixed text-center table-striped align-middle"
+          id="taskTable"
+        >
+          <caption class="text-center">
+            All Tasks
+          </caption>
+          <thead>
+            <tr>
+              <th>
+                Task<i class="fa-solid fa-sort" onclick="sortTableData(0);"></i>
+              </th>
+              <th>
+                Tag<i class="fa-solid fa-sort" onclick="sortTableData(1);"></i>
+              </th>
+              <th>
+                Duration<i
+                  class="fa-solid fa-sort"
+                  onclick="sortTableData(2);"
+                ></i>
+              </th>
+              <th>
+                Start Date<i
+                  class="fa-solid fa-sort"
+                  onclick="sortTableData(3);"
+                ></i>
+              </th>
+              <th>
+                End Date<i
+                  class="fa-solid fa-sort"
+                  onclick="sortTableData(4);"
+                ></i>
+              </th>
+              <th>
+                Status<i
+                  class="fa-solid fa-sort"
+                  onclick="sortTableData(5);"
+                ></i>
+              </th>
+              <th>
+                Created by<i
+                  class="fa-solid fa-sort"
+                  onclick="sortTableData(6);"
+                ></i>
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="all-tasks"></tbody>
+          <tfoot id="tableStatistics"></tfoot>
+        </table>
+      </div>
+
+      <!-- Tasks and Projects Addition -->
+      <div class="modal fade" id="addTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add Task</h5>
+              <button class="close" type="button" data-dismiss="modal">
+                x
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <form
+                method="POST"
+                onsubmit="return taskObj.addTask(this);"
+                id="form-task-hour-calculator"
+              >
+                <!-- New Tag Creation -->
+                <div class="form-group newTagCreation">
+                  <label>New Tag</label>
+                  <input
+                    type="text"
+                    name="new_tag"
+                    id="add-tag"
+                    class="form-control"
+                    placeholder="Tag Name"
+                  />
+
+                  <button
+                    type="button"
+                    onclick="taskObj.addTag();"
+                    class="btn btn-primary"
+                  >
+                    Add Tag
+                  </button>
+                </div>
+                <hr />
+
+                <!-- Tag Selection -->
+                <div class="form-group">
+                  <label>Tag</label>
+                  <select
+                    name="tag"
+                    id="add-task-tag"
+                    class="form-control"
+                    required
+                  ></select>
+                </div>
+
+                <!-- Task Input -->
+                <div class="form-group">
+                  <label>Task</label>
+                  <input
+                    type="text"
+                    name="task"
+                    class="form-control"
+                    placeholder="What are you going to do?"
+                    required
+                  />
+                  <label>Duration</label><br />
+                  <input
+                    type="text"
+                    name="duration"
+                    class="form-control html-duration-picker"
+                  /><br />
+                  <label class="start-date-input">Start Date</label>
+                  <input
+                    type="datetime-local"
+                    name="taskStartDate"
+                    class="form-control"
+                  />
+                  <label>End Date</label>
+                  <input
+                    type="datetime-local"
+                    name="taskEndDate"
+                    class="form-control"
+                  />
+                </div>
+              </form>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                form="form-task-hour-calculator"
+                class="btn btn-primary"
+              >
+                Add Task
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIP: Editing Tasks -->
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#editTaskModal"
+        id="editTaskButton"
+        hidden
+      >
+        Edit Task
+      </button>
+
+      <div class="modal fade" id="editTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Task</h5>
+              <button class="close" type="button" data-dismiss="modal">
+                x
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <form
+                method="POST"
+                onsubmit="return taskObj.editTask(this);"
+                form="form-task-hour-calculator"
+              >
+                <div class="form-group">
+                  <label>Task</label>
+                  <input
+                    type="text"
+                    id="#editedTaskName"
+                    name="editedTasks"
+                    class="form-control"
+                    placeholder="What are you going to do?"
+                    required
+                  />
+                  <label>Start Date</label>
+                  <input
+                    type="datetime-local"
+                    name="editedTaskStartDate"
+                    class="form-control"
+                  />
+                  <label>End Date</label>
+                  <input
+                    type="datetime-local"
+                    name="editedTaskEndDate"
+                    class="form-control"
+                  />
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                form="form-edit-task-hour-calculator"
+                class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#editTaskModal"
+              >
+                Edit Task
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Scripts -->
+    <script src="../js/Main.js"></script>
+    <script src="../js/Greetings.js"></script>
+
+    <!-- Bootstrap Accompanying Scripts -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

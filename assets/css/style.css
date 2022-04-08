@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f2f9ff;
+}
+th {
+  font-weight: 500;
+  font-size: 1rem;
+  background-color: rgb(0, 0, 107);
+  color: white;
+}
+hr {
+  border-width: 0.5rem;
+  border-color: #e3e8ea;
+}
+input {
+  margin-bottom: 1rem;
+}
+i {
+  margin: 0 0.5rem;
+}
+.menuOptions {
+  margin-bottom: 5rem;
+  margin: 5rem 4.2rem 0;
+  padding: 0;
+  text-align: right;
+}
+.started {
+  color: white;
+  background: #fe9319;
+  padding: 0.3125rem 1.3125rem;
+  border-radius: 0.3125rem;
+}
+.completed {
+  color: white;
+  background: #036ab5;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.3125rem;
+}
+.in-progress {
+  color: white;
+  background: #54b446;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.3125rem;
+}
+.container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background-color: #888684;
+}
+.table-responsive {
+  padding: 2rem 5rem;
+}
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+.not-started {
+  color: white;
+  background: #888684;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.3125rem;
+}
+.start-date-input {
+  margin-top: 1rem;
+}
+#form-task-hour-calculator-all-tags {
+  display: initial;
+  width: 200px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#add-task-tag {
+  padding: 0;
+  margin: 0;
+}
+h2 {
+  text-align: center;
+  font-weight: bold;
+  color: rgb(0, 0, 107);
+  margin-top: 1rem;
+}
+#dateToday {
+  width: 50%;
+}
+ul,
+li {
+  list-style: none;
+  display: inline-block;
+}
+.navbar i {
+  text-align: right;
+  font-size: 1.5rem;
+  padding: 0;
+  margin: 0.5rem;
+  color: rgb(0, 0, 107);
+}
+.navbar {
+  padding: 0;
+  justify-content: space-between;
+}
+.navline {
+  margin: 0.5rem 0.5rem 3rem;
+  border: 0.05rem solid #e3e8ea;
+}
