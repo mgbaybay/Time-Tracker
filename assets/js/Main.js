@@ -212,7 +212,7 @@ var taskObj = {
           name: task,
           status: isTaskCompleted ? "Completed" : "Not Started",
           isStarted: false,
-          duration: taskDuration != "00:00:00" ? taskDuration : "00:00:00",
+          duration: taskDuration != "00:00:00" ? taskDuration : "",
           logs: [],
           started:
             startDate != ""
@@ -291,7 +291,10 @@ var taskObj = {
           html += `<td data-started='
             ${JSON.stringify(dataStartedObj)}'>
             ${hours}:${minutes}:${seconds}</td>`;
-        } else if (tags[a].tasks[b].duration != "Completed") {
+        } else if (
+          tags[a].tasks[b].duration != "" &&
+          tags[a].tasks[b].status == "Completed"
+        ) {
           html += `<td>${tags[a].tasks[b].duration}</td>`;
         } else {
           html += `<td>${hours}:${minutes}:${seconds}</td>`;
