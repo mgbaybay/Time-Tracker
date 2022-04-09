@@ -6,15 +6,17 @@ validateUserSignin = () => {
 
   if (userName.value.length == 0 || userPassword.value.length == 0) {
     Swal.fire({
-      icon: "error",
+      type: "error",
       title: "Oops...",
       text: "Please input username and password.",
     });
+    return;
   } else if (users == null || users.length == 0) {
     Swal.fire({
-      icon: "error",
+      type: "error",
       title: "User not found",
     });
+    return;
   }
 
   for (let i = 0; i < users.length; i++) {
@@ -41,11 +43,11 @@ validateUserSignin = () => {
       `,
     }).then(() => {
       localStorage.setItem("username", userName.value);
-      window.open("/assets/src/timesheet.html", "_self");
+      window.open("./assets/src/timesheet.html", "_self");
     });
   } else {
     Swal.fire({
-      icon: "error",
+      type: "error",
       title: "Login Error",
       text: "Invalid credentials.",
     });
@@ -67,7 +69,7 @@ createUser = () => {
   }
   if (name.value.length == 0 || password.value.length == 0) {
     Swal.fire({
-      icon: "error",
+      type: "error",
       title: "Oops...",
       text: "Please input username and password.",
     });
@@ -77,7 +79,7 @@ createUser = () => {
     !password.value.match(lowerCaseLetters)
   ) {
     Swal.fire({
-      icon: "error",
+      type: "error",
       title: "Oops...",
       text: "Please use an uppercase letter, a lowercase letter and a number in the password.",
     });
@@ -89,7 +91,7 @@ createUser = () => {
     password.value = "";
     userPasswordConfirmation.value = "";
     Swal.fire({
-      icon: "success",
+      type: "success",
       title: "Account created!",
       text: "You will be redirected to login page.",
     }).then(() => {

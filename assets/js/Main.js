@@ -66,9 +66,7 @@ filterTable = () => {
       return;
     }
     var dataset = $("#taskTable tbody").find("tr");
-    // show all rows first
     dataset.show();
-    // filter the rows that should be hidden
     dataset
       .filter((index, item) => {
         return (
@@ -166,9 +164,6 @@ var taskObj = {
         taskDuration == "00:00:00" || (startDate == "" && endDate == "")
           ? false
           : true;
-    // computedTaskDuration = endDate.getTime() - startDate.getTime();
-    // console.log(computedTaskDuration);
-    console.log(taskDuration);
     for (let a = 0; a < tags.length; a++) {
       if (tags[a].id == tag) {
         let taskObj = {
@@ -185,6 +180,10 @@ var taskObj = {
           ended: endDate != "" ? endDate : "",
         };
         tags[a].tasks.push(taskObj);
+        form.tag.value = "";
+        form.task.value = "";
+        form.taskStartDate.value = "";
+        form.taskEndDate.value = "";
         break;
       }
     }
