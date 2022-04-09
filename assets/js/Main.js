@@ -291,7 +291,7 @@ var taskObj = {
           html += `<td data-started='
             ${JSON.stringify(dataStartedObj)}'>
             ${hours}:${minutes}:${seconds}</td>`;
-        } else if (tags[a].tasks[b].duration != "") {
+        } else if (tags[a].tasks[b].duration != "Completed") {
           html += `<td>${tags[a].tasks[b].duration}</td>`;
         } else {
           html += `<td>${hours}:${minutes}:${seconds}</td>`;
