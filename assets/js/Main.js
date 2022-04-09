@@ -301,7 +301,7 @@ var taskObj = {
         if (tags[a].tasks[b].status == "Completed") {
           html += `<td>${tags[a].tasks[b].ended}</td>`;
         } else {
-          html += `<td></td>`;
+          html += `<td>${tags[a].tasks[b].ended}</td>`;
         }
 
         // html += "<td>" + tags[a].tasks[b].endDate + "</td>";
