@@ -1,24 +1,32 @@
 let cPrev = -1;
 const user = localStorage.getItem("username");
-console.log(typeof user);
 
+/* Function for user logout
+  @params - none
+ */
 confirmLogout = () => {
   Swal.fire({
     title: "User Logout",
     text: "Are you sure you want to logout?",
-    icon: "warning",
+    type: "warning",
     showCancelButton: true,
     cancelButtonColor: "#dc3546",
     confirmButtonColor: "#27a844",
     confirmButtonText: "Yes, I want to logout",
   }).then((result) => {
-    if (result.isConfirmed) {
+    console.log(result.value);
+    if (result.value) {
+      console.log("yey");
       localStorage.setItem("username", "");
       window.open("../../index.html", "_self");
     }
   });
 };
-sortTableData = (c) => {
+
+/* Function for user logout
+  @params columnNo - the column number to sort
+ */
+sortTableData = (columnNo) => {
   rows = document.getElementById("taskTable").rows.length;
   columns = document.getElementById("taskTable").rows[0].cells.length;
   arrTable = [...Array(rows)].map((e) => Array(columns));
@@ -32,19 +40,19 @@ sortTableData = (c) => {
 
   th = arrTable.shift();
 
-  if (c !== cPrev) {
+  if (columnNo !== cPrev) {
     arrTable.sort(function (a, b) {
-      if (a[c] === b[c]) {
+      if (a[columnNo] === b[columnNo]) {
         return 0;
       } else {
-        return a[c] < b[c] ? -1 : 1;
+        return a[columnNo] < b[columnNo] ? -1 : 1;
       }
     });
   } else {
     arrTable.reverse();
   }
 
-  cPrev = c;
+  cPrev = columnNo;
   arrTable.unshift(th);
 
   for (ro = 0; ro < rows; ro++) {
@@ -55,6 +63,9 @@ sortTableData = (c) => {
   }
 };
 
+/* Function for filtering tags
+  @params - none
+ */
 filterTable = () => {
   $("#form-task-hour-calculator-all-tags").on("click", function () {
     $("table").show();
@@ -81,22 +92,43 @@ filterTable = () => {
   });
 };
 
+/* Date formatter
+  @params - none
+ */
+formatDate = (date) => {
+  var taskDate = date.split("T"),
+    day,
+    time;
+  day = taskDate[0];
+  time = taskDate[1];
+  return `${day} ${time}:00`;
+};
+
+/* Task Object
+  @key - tags
+ */
 var taskObj = {
   key: "tags",
 
+  // Delete a tag
   deleteTag: function (self) {
     if (self.tag.value == "") {
-      swal("Please select a tag to delete");
+      Swal.fire({
+        type: "warning",
+        text: "Please select a tag to delete",
+      });
       return false;
     }
-    swal({
+    Swal.fire({
       title: "Are you sure?",
       text: "Deleting the tag will also delete the tasks associated with it",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
+      type: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#dc3546",
+      confirmButtonColor: "#27a844",
+      confirmButtonText: "Yes, delete the tag",
     }).then((deleteTag) => {
-      if (deleteTag) {
+      if (deleteTag.value) {
         var tags = taskObj.getAllTags();
         for (var a = 0; a < tags.length; a++) {
           if (tags[a].id == self.tag.value) {
@@ -114,9 +146,13 @@ var taskObj = {
     return false;
   },
 
+  // Add a tag
   addTag: function () {
     if (document.getElementById("add-tag").value == "") {
-      swal("Please enter tag name");
+      Swal.fire({
+        type: "warning",
+        text: "Please enter a tag",
+      });
       return false;
     }
     var option = "";
@@ -135,16 +171,19 @@ var taskObj = {
     this.showAllTasks();
   },
 
+  // Get all tags
   getAllTags: function () {
     if (localStorage.getItem(this.key) == null) {
       localStorage.setItem(this.key, "[]");
     }
     return JSON.parse(localStorage.getItem(this.key));
   },
+
+  // Load all tags
   loadAllTags: function () {
-    var tags = taskObj.getAllTags();
+    var tags = taskObj.getAllTags(),
+      html = `<option value='' class="selection">Select Tag</option>`;
     tags = tags.reverse();
-    var html = `<option value='' class="selection">Select Tag</option>`;
     for (var a = 0; a < tags.length; a++) {
       html +=
         "<option value='" + tags[a].id + "'>" + tags[a].name + "</option>";
@@ -153,6 +192,8 @@ var taskObj = {
     document.getElementById("form-task-hour-calculator-all-tags").innerHTML =
       html;
   },
+
+  // Add a task
   addTask: function (form) {
     let tag = form.tag.value,
       task = form.task.value,
@@ -171,13 +212,13 @@ var taskObj = {
           name: task,
           status: isTaskCompleted ? "Completed" : "Not Started",
           isStarted: false,
-          duration: isTaskCompleted ? taskDuration : "",
+          duration: taskDuration != "00:00:00" ? taskDuration : "00:00:00",
           logs: [],
           started:
             startDate != ""
-              ? startDate
+              ? formatDate(startDate)
               : this.getCurrentTimeInTaskStartEndFormat(),
-          ended: endDate != "" ? endDate : "",
+          ended: endDate != "" ? formatDate(endDate) : "",
         };
         tags[a].tasks.push(taskObj);
         form.tag.value = "";
@@ -193,32 +234,27 @@ var taskObj = {
     this.showAllTasks();
     return false;
   },
+
+  // Get task duration
   getCurrentTimeInTaskStartEndFormat() {
-    let current_datetime = new Date();
-    var date = current_datetime.getDate();
-    date = date < 10 ? "0" + date : date;
-    var month = current_datetime.getMonth() + 1;
+    var current_datetime = new Date(),
+      date = current_datetime.getDate(),
+      month = current_datetime.getMonth() + 1,
+      date = date < 10 ? "0" + date : date,
+      hours = current_datetime.getHours(),
+      minutes = current_datetime.getMinutes(),
+      seconds = current_datetime.getSeconds();
+
     month = month < 10 ? "0" + month : month;
-    var hours = current_datetime.getHours();
     hours = hours < 10 ? "0" + hours : hours;
-    var minutes = current_datetime.getMinutes();
     minutes = minutes < 10 ? "0" + minutes : minutes;
-    var seconds = current_datetime.getSeconds();
     seconds = seconds < 10 ? "0" + seconds : seconds;
-    let formatted_date =
-      current_datetime.getFullYear() +
-      "-" +
-      month +
-      "-" +
-      date +
-      " " +
-      hours +
-      ":" +
-      minutes +
-      ":" +
-      seconds;
+
+    let formatted_date = `${current_datetime.getFullYear()}-${month}-${date} ${hours}:${minutes}:${seconds}`;
     return formatted_date;
   },
+
+  // Show all tasks
   showAllTasks: function () {
     var html = "",
       tags = this.getAllTags();
@@ -237,11 +273,13 @@ var taskObj = {
           }
         }
         duration = Math.abs((duration / 1000).toFixed(0));
-        var hours = Math.floor(duration / 3600) % 24;
+
+        var hours = Math.floor(duration / 3600) % 24,
+          minutes = Math.floor(duration / 60) % 60,
+          seconds = duration % 60;
+
         hours = hours < 10 ? "0" + hours : hours;
-        var minutes = Math.floor(duration / 60) % 60;
         minutes = minutes < 10 ? "0" + minutes : minutes;
-        var seconds = duration % 60;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         if (tags[a].tasks[b].isStarted) {
@@ -250,31 +288,20 @@ var taskObj = {
             tag: tags[a].id,
             task: tags[a].tasks[b].id,
           };
-          html +=
-            "<td data-started='" +
-            JSON.stringify(dataStartedObj) +
-            "'>" +
-            hours +
-            ":" +
-            minutes +
-            ":" +
-            seconds +
-            "</td>";
-        } else if (
-          tags[a].tasks[b].duration != "" &&
-          tags[a].tasks[b].status == "Completed"
-        ) {
-          html += "<td>" + tags[a].tasks[b].duration + "</td>";
+          html += `<td data-started='
+            ${JSON.stringify(dataStartedObj)}'>
+            ${hours}:${minutes}:${seconds}</td>`;
+        } else if (tags[a].tasks[b].duration != "") {
+          html += `<td>${tags[a].tasks[b].duration}</td>`;
         } else {
-          html += "<td>" + hours + ":" + minutes + ":" + seconds + "</td>";
+          html += `<td>${hours}:${minutes}:${seconds}</td>`;
         }
-        console.log(tags[a].tasks[b].ended);
+
+        html += `<td>${tags[a].tasks[b].started}</td>`;
         if (tags[a].tasks[b].status == "Completed") {
-          html += "<td>" + tags[a].tasks[b].started + "</td>";
-          html += "<td>" + tags[a].tasks[b].ended + "</td>";
+          html += `<td>${tags[a].tasks[b].ended}</td>`;
         } else {
-          html += "<td>" + tags[a].tasks[b].started + "</td>";
-          html += "<td>" + tags[a].tasks[b].ended + "</td>";
+          html += `<td></td>`;
         }
 
         // html += "<td>" + tags[a].tasks[b].endDate + "</td>";
@@ -302,39 +329,38 @@ var taskObj = {
           tags[a].id +
           tags[a].tasks[b].id +
           "'>";
-        html += "<input type='hidden' name='tag' value='" + tags[a].id + "'>";
-        html +=
-          "<input type='hidden' name='task' value='" +
-          tags[a].tasks[b].id +
-          "'>";
+        html += `<input type='hidden' name='tag' value='${tags[a].id}'>`;
+        html += `<input type='hidden' name='task' value='
+          ${tags[a].tasks[b].id}
+          '>`;
         html +=
           "<select class='form-control selection' name='status' onchange='taskObj.changeTaskStatus(this);' data-form-id='form-change-task-status-" +
           tags[a].id +
           tags[a].tasks[b].id +
           "'>";
-        html += "<option value=''>Update Status</option>";
+        html += `<option value=''>Update Status</option>`;
         if (tags[a].tasks[b].isStarted) {
-          html += "<option value='stop'>Stop</option>";
+          html += `<option value='stop'>Stop</option>`;
         } else {
-          html += "<option value='start'>Start</option>";
+          html += `<option value='start'>Start</option>`;
         }
         if (tags[a].tasks[b].status == "Paused") {
-          html += "<option value='complete'>Mark as Completed</option>";
+          html += `<option value='complete'>Mark as Completed</option>`;
         } else {
-          html += "<option value='progress'>Mark as Started</option>";
-          // tags[a].tasks[b].ended = "";
+          html += `<option value='progress'>Mark as Started</option>`;
         }
-        html += "<option value='edit'>Edit</option>";
-        html += "<option value='delete'>Delete</option>";
-        html += "</select>";
-        html += "</form>";
-        html += "</td>";
-        html += "</tr>";
+        html += `<option value='edit'>Edit</option>`;
+        html += `<option value='delete'>Delete</option>`;
+        html += `</select>`;
+        html += `</form>`;
+        html += `</td>`;
+        html += `</tr>`;
       }
     }
     document.getElementById("all-tasks").innerHTML = html;
   },
 
+  // Edit a task
   editTask: function (form) {
     if (self.value == "") {
       return;
@@ -345,26 +371,29 @@ var taskObj = {
     console.log(form);
   },
 
+  // Change a task status
   changeTaskStatus: function (self) {
     if (self.value == "") {
       return;
     }
-    var formId = self.getAttribute("data-form-id");
-    var form = document.getElementById(formId);
-    var tags = this.getAllTags();
+    var formId = self.getAttribute("data-form-id"),
+      form = document.getElementById(formId),
+      tags = this.getAllTags();
     for (var a = 0; a < tags.length; a++) {
       if (tags[a].id == form.tag.value) {
         for (var b = 0; b < tags[a].tasks.length; b++) {
           if (tags[a].tasks[b].id == form.task.value) {
             if (self.value == "delete") {
-              swal({
+              Swal.fire({
                 title: "Are you sure?",
                 text: "Deleting the task will delete its hours too.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#dc3546",
+                confirmButtonColor: "#27a844",
+                confirmButtonText: "Yes, delete the task",
               }).then((willDelete) => {
-                if (willDelete) {
+                if (willDelete.value) {
                   tags[a].tasks.splice(b, 1);
                   localStorage.setItem(this.key, JSON.stringify(tags));
                   this.showAllTasks();
@@ -388,14 +417,16 @@ var taskObj = {
               tags[a].tasks[b].isStarted = false;
               tags[a].tasks[b].ended = "";
             } else if (self.value == "start") {
-              swal({
+              Swal.fire({
                 title: "Are you sure?",
                 text: "This will start the timer.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#dc3546",
+                confirmButtonColor: "#27a844",
+                confirmButtonText: "Yes, start the timer",
               }).then((doStart) => {
-                if (doStart) {
+                if (doStart.value) {
                   tags[a].tasks[b].isStarted = true;
                   var logObj = {
                     id: tags[a].tasks[b].logs.length,
@@ -410,14 +441,16 @@ var taskObj = {
                 }
               });
             } else if (self.value == "stop") {
-              swal({
+              Swal.fire({
                 title: "Are you sure?",
                 text: "This will stop the timer.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#dc3546",
+                confirmButtonColor: "#27a844",
+                confirmButtonText: "Yes, stop the timer",
               }).then((doStop) => {
-                if (doStop) {
+                if (doStop.value) {
                   tags[a].tasks[b].isStarted = false;
                   tags[a].tasks[b].status = "Paused";
                   for (var c = 0; c < tags[a].tasks[b].logs.length; c++) {
@@ -433,14 +466,16 @@ var taskObj = {
                 }
               });
             } else if (self.value == "edit") {
-              swal({
+              Swal.fire({
                 title: "Are you sure?",
                 text: "This will stop the timer.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#dc3546",
+                confirmButtonColor: "#27a844",
+                confirmButtonText: "Yes, stop the timer",
               }).then((doEdit) => {
-                if (doEdit) {
+                if (doEdit.value) {
                   tags[a].tasks[b].isStarted = false;
                   this.editTask();
                 } else {
@@ -469,7 +504,7 @@ var taskObj = {
 window.addEventListener("load", () => {
   taskObj.loadAllTags();
   taskObj.showAllTasks();
-  // document.getElementsByClassName("completed").insertAdjacentHTML(<i class="fa-solid fa-badge-check"></i>)
+  // Show timer
   setInterval(() => {
     let dataStarted = document.querySelectorAll("td[data-started]");
     for (var i = 0; i < dataStarted.length; i++) {

@@ -1,3 +1,4 @@
+//Function to validate user signin
 validateUserSignin = () => {
   let users = JSON.parse(localStorage.getItem("users")),
     userName = document.getElementById("userName"),
@@ -19,6 +20,7 @@ validateUserSignin = () => {
     return;
   }
 
+  // Check if user exists from users list
   for (let i = 0; i < users.length; i++) {
     if (users[i][0] == userName.value && users[i][1] == userPassword.value) {
       isLoginSuccessful = true;
@@ -54,6 +56,8 @@ validateUserSignin = () => {
   }
 };
 
+// Function to create new users
+// Currently, there is no validation to check if the user already exists.
 createUser = () => {
   let name = document.getElementById("name"),
     password = document.getElementById("password"),
@@ -64,9 +68,12 @@ createUser = () => {
     user = JSON.parse(localStorage.getItem("users")),
     users = [];
 
-  if (user != null) {
+  if (user === null || users == "" || users === undefined) {
+  } else {
     users.push(user);
   }
+  console.log(users);
+  // Validations
   if (name.value.length == 0 || password.value.length == 0) {
     Swal.fire({
       type: "error",
@@ -83,9 +90,17 @@ createUser = () => {
       title: "Oops...",
       text: "Please use an uppercase letter, a lowercase letter and a number in the password.",
     });
-  } else {
+  } else if (password.value != userPasswordConfirmation.value) {
+    Swal.fire({
+      type: "error",
+      title: "Oops...",
+      text: "Password confirmation does not match the password set.",
+    });
+  } else if (name.value.length && password.value.length) {
     userData.push(name.value, password.value);
+    console.log(userData);
     users.push(userData);
+    console.log(users);
     localStorage.setItem("users", JSON.stringify(users));
     name.value = "";
     password.value = "";
